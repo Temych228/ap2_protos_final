@@ -1,0 +1,38 @@
+name: Generate and Push Protos
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout proto repo
+        uses: actions/checkout@v4
+
+      - name: Setup Buf
+        uses: bufbuild/buf-setup-action@v1
+
+      - name: Generate Code
+        run: buf generate
+
+      - name: Deploy to Go Repo
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROTO_ACTION_TOKEN }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Клонируем НОВЫЙ репозиторий
+          git clone https://x-access-token:${GITHUB_TOKEN}@github.com/Temych228/ap2_protos_go_final.git target_repo
+          
+          # Очищаем и копируем новые файлы из папки gen (параметр out в buf.gen.yaml)
+          rm -rf target_repo/*
+          cp -r gen/* target_repo/
+          
+          cd target_repo
+          git add .
+          git commit -m "Auto-update protos: $GITHUB_SHA" || exit 0
+          git push origin main

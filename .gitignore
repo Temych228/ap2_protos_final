@@ -1,0 +1,5 @@
+# buf cache
+.buf/
+
+# local overrides
+*.local.yaml

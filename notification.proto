@@ -1,0 +1,172 @@
+syntax = "proto3";
+
+package notification.v1;
+
+option go_package = "github.com/Temych228/AP2_Final_OnlineParking/services/notification-service/gen/notification/v1;notificationv1";
+
+import "google/protobuf/timestamp.proto";
+
+service NotificationService {
+  // Send an email notification directly (synchronous)
+  rpc SendEmail(SendEmailRequest) returns (SendEmailResponse);
+  // Send a bulk email (admin broadcast)
+  rpc SendBulkEmail(SendBulkEmailRequest) returns (SendBulkEmailResponse);
+  // Get notification history for a user
+  rpc GetNotificationHistory(GetNotificationHistoryRequest) returns (GetNotificationHistoryResponse);
+  // Mark notification as read
+  rpc MarkNotificationRead(MarkNotificationReadRequest) returns (MarkNotificationReadResponse);
+  // Stream real-time notifications for a user
+  rpc StreamNotifications(StreamNotificationsRequest) returns (stream NotificationEvent);
+  // Get unread notification count
+  rpc GetUnreadCount(GetUnreadCountRequest) returns (GetUnreadCountResponse);
+  // Delete notification
+  rpc DeleteNotification(DeleteNotificationRequest) returns (DeleteNotificationResponse);
+  // Send SMS (future placeholder)
+  rpc SendSMS(SendSMSRequest) returns (SendSMSResponse);
+  // Get notification templates
+  rpc GetTemplate(GetTemplateRequest) returns (GetTemplateResponse);
+  // Update notification preferences
+  rpc UpdatePreferences(UpdatePreferencesRequest) returns (UpdatePreferencesResponse);
+  // Get notification preferences
+  rpc GetPreferences(GetPreferencesRequest) returns (GetPreferencesResponse);
+  // Send push notification
+  rpc SendPush(SendPushRequest) returns (SendPushResponse);
+}
+
+message Notification {
+  string id        = 1;
+  string user_id   = 2;
+  string type      = 3; // "email" | "sms" | "push"
+  string subject   = 4;
+  string body      = 5;
+  bool   is_read   = 6;
+  string status    = 7; // "pending" | "sent" | "failed"
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp sent_at    = 9;
+}
+
+message SendEmailRequest {
+  string to      = 1;
+  string subject = 2;
+  string body    = 3;
+  string user_id = 4; // optional, for history
+  string type    = 5; // "booking_confirmed" | "payment_success" | etc.
+}
+
+message SendEmailResponse {
+  bool   success         = 1;
+  string notification_id = 2;
+}
+
+message SendBulkEmailRequest {
+  repeated string to      = 1;
+  string          subject = 2;
+  string          body    = 3;
+  string          type    = 4;
+}
+
+message SendBulkEmailResponse {
+  int32 sent_count   = 1;
+  int32 failed_count = 2;
+}
+
+message GetNotificationHistoryRequest {
+  string user_id   = 1;
+  int32  page      = 2;
+  int32  page_size = 3;
+}
+
+message GetNotificationHistoryResponse {
+  repeated Notification notifications = 1;
+  int32                 total         = 2;
+}
+
+message MarkNotificationReadRequest {
+  string notification_id = 1;
+  string user_id         = 2;
+}
+
+message MarkNotificationReadResponse {
+  bool success = 1;
+}
+
+message StreamNotificationsRequest {
+  string user_id = 1;
+}
+
+message NotificationEvent {
+  string       event_type   = 1; // "new" | "read" | "deleted"
+  Notification notification = 2;
+}
+
+message GetUnreadCountRequest {
+  string user_id = 1;
+}
+
+message GetUnreadCountResponse {
+  int32 count = 1;
+}
+
+message DeleteNotificationRequest {
+  string notification_id = 1;
+  string user_id         = 2;
+}
+
+message DeleteNotificationResponse {
+  bool success = 1;
+}
+
+message SendSMSRequest {
+  string phone   = 1;
+  string message = 2;
+  string user_id = 3;
+}
+
+message SendSMSResponse {
+  bool   success = 1;
+  string message = 2;
+}
+
+message GetTemplateRequest {
+  string template_name = 1;
+}
+
+message GetTemplateResponse {
+  string subject = 1;
+  string body    = 2;
+}
+
+message NotificationPreferences {
+  string user_id          = 1;
+  bool   email_enabled    = 2;
+  bool   sms_enabled      = 3;
+  bool   push_enabled     = 4;
+  bool   marketing_emails = 5;
+}
+
+message UpdatePreferencesRequest {
+  NotificationPreferences preferences = 1;
+}
+
+message UpdatePreferencesResponse {
+  bool success = 1;
+}
+
+message GetPreferencesRequest {
+  string user_id = 1;
+}
+
+message GetPreferencesResponse {
+  NotificationPreferences preferences = 1;
+}
+
+message SendPushRequest {
+  string user_id  = 1;
+  string title    = 2;
+  string body     = 3;
+  string data     = 4; // JSON string
+}
+
+message SendPushResponse {
+  bool success = 1;
+}

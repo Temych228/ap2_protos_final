@@ -1,0 +1,13 @@
+version: v2
+modules:
+  - path: auth/v1
+  - path: notification/v1
+  - path: user/v1
+deps:
+  - buf.build/googleapis/googleapis
+lint:
+  use:
+    - DEFAULT
+breaking:
+  use:
+    - FILE

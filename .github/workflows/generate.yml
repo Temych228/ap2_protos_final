@@ -20,7 +20,7 @@ jobs:
 
       - name: Deploy to Go Repo
         env:
-          GITHUB_TOKEN: ${{ secrets.PROTO_ACTION_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PROTO_ACTION_TOKEN2 }}
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"

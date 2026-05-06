@@ -18,22 +18,49 @@ jobs:
       - name: Generate Code
         run: buf generate
 
-      - name: Deploy to Go Repo
+      - name: Deploy and Tag Go Repo
         env:
           GITHUB_TOKEN: ${{ secrets.PROTOBUF_TOKEN2 }}
         run: |
+          # Настройка пользователя
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Клонируем НОВЫЙ репозиторий
+          # 1. Клонируем целевой Go-репозиторий[cite: 7]
           git clone https://x-access-token:${GITHUB_TOKEN}@github.com/Temych228/ap2_protos_go_final.git target_repo
           
-          # Очищаем и копируем новые файлы из папки gen (параметр out в buf.gen.yaml)
-          rm -rf target_repo/*
+          # 2. Обновляем файлы сервисов: auth, notification, user[cite: 4, 5, 6]
+          # Очищаем старое содержимое, кроме служебной папки .git
+          find target_repo -mindepth 1 -maxdepth 1 -not -name ".git" -exec rm -rf {} +
+          
+          # Копируем свежесгенерированный код из папки gen (согласно buf.gen.yaml)[cite: 1]
           cp -r gen/* target_repo/
           
           cd target_repo
           git add .
-          git commit -m "Auto-update protos: $GITHUB_SHA" || exit 0
-          git push origin main
           
+          # 3. Проверка на наличие реальных изменений[cite: 7]
+          if git diff --staged --quiet; then
+            echo "No changes in proto files. Skipping push and tagging."
+            exit 0
+          fi
+          
+          # 4. Фиксация изменений и пуш в ветку main[cite: 7]
+          git commit -m "Auto-update protos: $GITHUB_SHA"
+          git push -u origin main
+
+          # 5. Автоматическое создание нового тега (семантическое версионирование)
+          # Берем последний тег или v1.0.0, если тегов еще нет
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v1.0.0")
+          
+          # Логика инкремента Patch-версии: v1.0.1 -> v1.0.2
+          VERSION=$(echo $LATEST_TAG | sed 's/v//')
+          MAJOR=$(echo $VERSION | cut -d. -f1)
+          MINOR=$(echo $VERSION | cut -d. -f2)
+          PATCH=$(echo $VERSION | cut -d. -f3)
+          NEW_PATCH=$((PATCH + 1))
+          NEW_TAG="v$MAJOR.$MINOR.$NEW_PATCH"
+          
+          echo "Pushing new version tag: $NEW_TAG"
+          git tag $NEW_TAG
+          git push origin $NEW_TAG

@@ -1,8 +1,6 @@
 version: v2
 modules:
-  - path: auth/v1
-  - path: notification/v1
-  - path: user/v1
+  - path: . 
 deps:
   - buf.build/googleapis/googleapis
 lint:

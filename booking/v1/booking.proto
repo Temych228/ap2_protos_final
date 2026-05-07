@@ -1,0 +1,143 @@
+syntax = "proto3";
+
+package booking.v1;
+
+option go_package = "github.com/Temych228/AP2_Final_OnlineParking/services/booking-service/gen/booking/v1;bookingv1";
+
+import "google/protobuf/timestamp.proto";
+
+service BookingService {
+  // Create a new booking
+  rpc CreateBooking(CreateBookingRequest) returns (CreateBookingResponse);
+
+  // Get booking by id
+  rpc GetBooking(GetBookingRequest) returns (GetBookingResponse);
+
+  // List bookings with filters
+  rpc ListBookings(ListBookingsRequest) returns (ListBookingsResponse);
+
+  // Confirm booking
+  rpc ConfirmBooking(ConfirmBookingRequest) returns (ConfirmBookingResponse);
+
+  // Cancel booking
+  rpc CancelBooking(CancelBookingRequest) returns (CancelBookingResponse);
+
+  // Start booking (user arrived / parking started)
+  rpc StartBooking(StartBookingRequest) returns (StartBookingResponse);
+
+  // Complete booking (finish parking session)
+  rpc CompleteBooking(CompleteBookingRequest) returns (CompleteBookingResponse);
+}
+
+/* ===================== CREATE ===================== */
+
+message CreateBookingRequest {
+  string user_id        = 1;
+  int64  parking_id     = 2;
+  int64  spot_id        = 3;
+  string vehicle_plate   = 4;
+  google.protobuf.Timestamp start_time = 5;
+  google.protobuf.Timestamp end_time   = 6;
+}
+
+message CreateBookingResponse {
+  string booking_id = 1;
+  string status     = 2;
+}
+
+/* ===================== GET ===================== */
+
+message GetBookingRequest {
+  string booking_id = 1;
+}
+
+message GetBookingResponse {
+  string booking_id   = 1;
+  string user_id      = 2;
+  int64  parking_id   = 3;
+  int64  spot_id      = 4;
+  string vehicle_plate = 5;
+
+  google.protobuf.Timestamp start_time = 6;
+  google.protobuf.Timestamp end_time   = 7;
+
+  string status       = 8;
+  string cancel_reason = 9;
+
+  google.protobuf.Timestamp created_at  = 10;
+  google.protobuf.Timestamp updated_at  = 11;
+  google.protobuf.Timestamp cancelled_at = 12;
+}
+
+/* ===================== LIST ===================== */
+
+message ListBookingsRequest {
+  int32  page       = 1;
+  int32  page_size  = 2;
+
+  string user_id    = 3;
+  int64  parking_id = 4;
+  int64  spot_id    = 5;
+  string status     = 6;
+}
+
+message ListBookingsResponse {
+  repeated BookingItem items = 1;
+  int32 total = 2;
+}
+
+message BookingItem {
+  string booking_id = 1;
+  string user_id    = 2;
+  int64  parking_id = 3;
+  int64  spot_id    = 4;
+  string status     = 5;
+
+  google.protobuf.Timestamp start_time = 6;
+  google.protobuf.Timestamp end_time   = 7;
+}
+
+/* ===================== CONFIRM ===================== */
+
+message ConfirmBookingRequest {
+  string booking_id = 1;
+}
+
+message ConfirmBookingResponse {
+  string booking_id = 1;
+  string status     = 2;
+}
+
+/* ===================== CANCEL ===================== */
+
+message CancelBookingRequest {
+  string booking_id = 1;
+  string reason     = 2;
+}
+
+message CancelBookingResponse {
+  string booking_id = 1;
+  string status     = 2;
+}
+
+/* ===================== START ===================== */
+
+message StartBookingRequest {
+  string booking_id = 1;
+}
+
+message StartBookingResponse {
+  string booking_id = 1;
+  string status     = 2;
+}
+
+/* ===================== COMPLETE ===================== */
+
+message CompleteBookingRequest {
+  string booking_id = 1;
+}
+
+message CompleteBookingResponse {
+  string booking_id = 1;
+  string status     = 2;
+}

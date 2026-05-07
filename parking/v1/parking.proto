@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package parking.v1;
 
-option go_package = "github.com/Temych228/ap2_protos_final1/gen/go/parking/v1;parkingv1";
+option go_package = "github.com/Temych228/ap2_protos_go_final/parking/v1;parkingv1";
 
 service ParkingService {
   rpc CreateParking(CreateParkingRequest) returns (ParkingResponse);

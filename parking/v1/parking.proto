@@ -4,135 +4,195 @@ package parking.v1;
 
 option go_package = "github.com/Temych228/ap2_protos_go_final/parking/v1;parkingv1";
 
+import "google/protobuf/timestamp.proto";
+
 service ParkingService {
-  rpc CreateParking(CreateParkingRequest) returns (ParkingResponse);
-  rpc GetParking(GetParkingRequest) returns (ParkingResponse);
-  rpc GetAllParkings(GetAllParkingsRequest) returns (ParkingListResponse);
-  rpc DeleteParking(DeleteParkingRequest) returns (ActionResponse);
+  rpc CreateParkingLot(CreateParkingLotRequest) returns (CreateParkingLotResponse);
+  rpc GetParkingLot(GetParkingLotRequest) returns (GetParkingLotResponse);
+  rpc UpdateParkingLot(UpdateParkingLotRequest) returns (UpdateParkingLotResponse);
+  rpc DeleteParkingLot(DeleteParkingLotRequest) returns (DeleteParkingLotResponse);
+  rpc ListParkingLots(ListParkingLotsRequest) returns (ListParkingLotsResponse);
 
-  rpc CreateSpot(CreateSpotRequest) returns (SpotResponse);
-  rpc GetSpot(GetSpotRequest) returns (SpotResponse);
-  rpc GetSpotsByParking(GetSpotsByParkingRequest) returns (SpotListResponse);
-  rpc UpdateSpotStatus(UpdateSpotStatusRequest) returns (ActionResponse);
-  rpc ReserveSpot(SpotActionRequest) returns (ActionResponse);
-  rpc ReleaseSpot(SpotActionRequest) returns (ActionResponse);
-  rpc DeleteSpot(DeleteSpotRequest) returns (ActionResponse);
+  rpc CreateParkingSpot(CreateParkingSpotRequest) returns (CreateParkingSpotResponse);
+  rpc GetParkingSpot(GetParkingSpotRequest) returns (GetParkingSpotResponse);
+  rpc UpdateParkingSpot(UpdateParkingSpotRequest) returns (UpdateParkingSpotResponse);
+  rpc DeleteParkingSpot(DeleteParkingSpotRequest) returns (DeleteParkingSpotResponse);
+  rpc ListParkingSpots(ListParkingSpotsRequest) returns (ListParkingSpotsResponse);
 
-  rpc CreateTariff(CreateTariffRequest) returns (TariffResponse);
-  rpc GetTariff(GetTariffRequest) returns (TariffResponse);
-  rpc UpdateTariff(UpdateTariffRequest) returns (ActionResponse);
-  rpc CalculatePrice(CalculatePriceRequest) returns (CalculatePriceResponse);
+  rpc ReserveSpot(ReserveSpotRequest) returns (ReserveSpotResponse);
+  rpc ReleaseSpot(ReleaseSpotRequest) returns (ReleaseSpotResponse);
 }
 
-message GetAllParkingsRequest {}
-
-message Parking {
-  int64 id = 1;
+message ParkingLot {
+  string id = 1;
   string name = 2;
   string address = 3;
-  int32 total_spots = 4;
-  string created_at = 5;
+  double latitude = 4;
+  double longitude = 5;
+  int32 total_spots = 6;
+  int32 available_spots = 7;
+  double price_per_hour = 8;
+  bool is_active = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
 }
 
-message Spot {
-  int64 id = 1;
-  int64 parking_id = 2;
-  string number = 3;
-  string status = 4;
-  string created_at = 5;
+message ParkingSpot {
+  string id = 1;
+  string parking_lot_id = 2;
+  string code = 3;
+  string level = 4;
+  string spot_type = 5;
+  string vehicle_type = 6;
+  bool is_active = 7;
+  bool is_occupied = 8;
+  bool is_reserved = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
 }
 
-message Tariff {
-  int64 id = 1;
-  int64 parking_id = 2;
-  double price_per_hour = 3;
-  string created_at = 4;
+message Reservation {
+  string id = 1;
+  string user_id = 2;
+  string parking_lot_id = 3;
+  string parking_spot_id = 4;
+  string vehicle_number = 5;
+  string status = 6;
+  google.protobuf.Timestamp starts_at = 7;
+  google.protobuf.Timestamp ends_at = 8;
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp updated_at = 10;
 }
 
-message CreateParkingRequest {
+message CreateParkingLotRequest {
   string name = 1;
   string address = 2;
-  int32 total_spots = 3;
+  double latitude = 3;
+  double longitude = 4;
+  int32 total_spots = 5;
+  double price_per_hour = 6;
 }
 
-message GetParkingRequest {
-  int64 id = 1;
+message CreateParkingLotResponse {
+  ParkingLot parking_lot = 1;
 }
 
-message DeleteParkingRequest {
-  int64 id = 1;
+message GetParkingLotRequest {
+  string parking_lot_id = 1;
 }
 
-message ParkingResponse {
-  Parking parking = 1;
+message GetParkingLotResponse {
+  ParkingLot parking_lot = 1;
 }
 
-message ParkingListResponse {
-  repeated Parking parkings = 1;
+message UpdateParkingLotRequest {
+  string parking_lot_id = 1;
+  string name = 2;
+  string address = 3;
+  double latitude = 4;
+  double longitude = 5;
+  int32 total_spots = 6;
+  double price_per_hour = 7;
+  bool is_active = 8;
 }
 
-message CreateSpotRequest {
-  int64 parking_id = 1;
-  string number = 2;
+message UpdateParkingLotResponse {
+  ParkingLot parking_lot = 1;
 }
 
-message GetSpotRequest {
-  int64 id = 1;
+message DeleteParkingLotRequest {
+  string parking_lot_id = 1;
 }
 
-message GetSpotsByParkingRequest {
-  int64 parking_id = 1;
-}
-
-message UpdateSpotStatusRequest {
-  int64 spot_id = 1;
-  string status = 2;
-}
-
-message SpotActionRequest {
-  int64 spot_id = 1;
-}
-
-message DeleteSpotRequest {
-  int64 spot_id = 1;
-}
-
-message SpotResponse {
-  Spot spot = 1;
-}
-
-message SpotListResponse {
-  repeated Spot spots = 1;
-}
-
-message CreateTariffRequest {
-  int64 parking_id = 1;
-  double price_per_hour = 2;
-}
-
-message GetTariffRequest {
-  int64 parking_id = 1;
-}
-
-message UpdateTariffRequest {
-  int64 parking_id = 1;
-  double price_per_hour = 2;
-}
-
-message CalculatePriceRequest {
-  int64 parking_id = 1;
-  double hours = 2;
-}
-
-message TariffResponse {
-  Tariff tariff = 1;
-}
-
-message CalculatePriceResponse {
-  double total_price = 1;
-}
-
-message ActionResponse {
+message DeleteParkingLotResponse {
   bool success = 1;
-  string message = 2;
+}
+
+message ListParkingLotsRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+  bool active_only = 3;
+}
+
+message ListParkingLotsResponse {
+  repeated ParkingLot parking_lots = 1;
+  int32 total = 2;
+}
+
+message CreateParkingSpotRequest {
+  string parking_lot_id = 1;
+  string code = 2;
+  string level = 3;
+  string spot_type = 4;
+  string vehicle_type = 5;
+}
+
+message CreateParkingSpotResponse {
+  ParkingSpot parking_spot = 1;
+}
+
+message GetParkingSpotRequest {
+  string parking_spot_id = 1;
+}
+
+message GetParkingSpotResponse {
+  ParkingSpot parking_spot = 1;
+}
+
+message UpdateParkingSpotRequest {
+  string parking_spot_id = 1;
+  string code = 2;
+  string level = 3;
+  string spot_type = 4;
+  string vehicle_type = 5;
+  bool is_active = 6;
+}
+
+message UpdateParkingSpotResponse {
+  ParkingSpot parking_spot = 1;
+}
+
+message DeleteParkingSpotRequest {
+  string parking_spot_id = 1;
+}
+
+message DeleteParkingSpotResponse {
+  bool success = 1;
+}
+
+message ListParkingSpotsRequest {
+  string parking_lot_id = 1;
+  int32 page = 2;
+  int32 page_size = 3;
+  bool only_available = 4;
+  string vehicle_type = 5;
+}
+
+message ListParkingSpotsResponse {
+  repeated ParkingSpot parking_spots = 1;
+  int32 total = 2;
+}
+
+message ReserveSpotRequest {
+  string user_id = 1;
+  string parking_lot_id = 2;
+  string parking_spot_id = 3;
+  string vehicle_number = 4;
+  google.protobuf.Timestamp starts_at = 5;
+  google.protobuf.Timestamp ends_at = 6;
+}
+
+message ReserveSpotResponse {
+  Reservation reservation = 1;
+  ParkingSpot parking_spot = 2;
+}
+
+message ReleaseSpotRequest {
+  string reservation_id = 1;
+  string user_id = 2;
+}
+
+message ReleaseSpotResponse {
+  bool success = 1;
+  Reservation reservation = 2;
 }

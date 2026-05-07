@@ -1,0 +1,138 @@
+syntax = "proto3";
+
+package parking.v1;
+
+option go_package = "github.com/Temych228/ap2_protos_final1/gen/go/parking/v1;parkingv1";
+
+service ParkingService {
+  rpc CreateParking(CreateParkingRequest) returns (ParkingResponse);
+  rpc GetParking(GetParkingRequest) returns (ParkingResponse);
+  rpc GetAllParkings(GetAllParkingsRequest) returns (ParkingListResponse);
+  rpc DeleteParking(DeleteParkingRequest) returns (ActionResponse);
+
+  rpc CreateSpot(CreateSpotRequest) returns (SpotResponse);
+  rpc GetSpot(GetSpotRequest) returns (SpotResponse);
+  rpc GetSpotsByParking(GetSpotsByParkingRequest) returns (SpotListResponse);
+  rpc UpdateSpotStatus(UpdateSpotStatusRequest) returns (ActionResponse);
+  rpc ReserveSpot(SpotActionRequest) returns (ActionResponse);
+  rpc ReleaseSpot(SpotActionRequest) returns (ActionResponse);
+  rpc DeleteSpot(DeleteSpotRequest) returns (ActionResponse);
+
+  rpc CreateTariff(CreateTariffRequest) returns (TariffResponse);
+  rpc GetTariff(GetTariffRequest) returns (TariffResponse);
+  rpc UpdateTariff(UpdateTariffRequest) returns (ActionResponse);
+  rpc CalculatePrice(CalculatePriceRequest) returns (CalculatePriceResponse);
+}
+
+message GetAllParkingsRequest {}
+
+message Parking {
+  int64 id = 1;
+  string name = 2;
+  string address = 3;
+  int32 total_spots = 4;
+  string created_at = 5;
+}
+
+message Spot {
+  int64 id = 1;
+  int64 parking_id = 2;
+  string number = 3;
+  string status = 4;
+  string created_at = 5;
+}
+
+message Tariff {
+  int64 id = 1;
+  int64 parking_id = 2;
+  double price_per_hour = 3;
+  string created_at = 4;
+}
+
+message CreateParkingRequest {
+  string name = 1;
+  string address = 2;
+  int32 total_spots = 3;
+}
+
+message GetParkingRequest {
+  int64 id = 1;
+}
+
+message DeleteParkingRequest {
+  int64 id = 1;
+}
+
+message ParkingResponse {
+  Parking parking = 1;
+}
+
+message ParkingListResponse {
+  repeated Parking parkings = 1;
+}
+
+message CreateSpotRequest {
+  int64 parking_id = 1;
+  string number = 2;
+}
+
+message GetSpotRequest {
+  int64 id = 1;
+}
+
+message GetSpotsByParkingRequest {
+  int64 parking_id = 1;
+}
+
+message UpdateSpotStatusRequest {
+  int64 spot_id = 1;
+  string status = 2;
+}
+
+message SpotActionRequest {
+  int64 spot_id = 1;
+}
+
+message DeleteSpotRequest {
+  int64 spot_id = 1;
+}
+
+message SpotResponse {
+  Spot spot = 1;
+}
+
+message SpotListResponse {
+  repeated Spot spots = 1;
+}
+
+message CreateTariffRequest {
+  int64 parking_id = 1;
+  double price_per_hour = 2;
+}
+
+message GetTariffRequest {
+  int64 parking_id = 1;
+}
+
+message UpdateTariffRequest {
+  int64 parking_id = 1;
+  double price_per_hour = 2;
+}
+
+message CalculatePriceRequest {
+  int64 parking_id = 1;
+  double hours = 2;
+}
+
+message TariffResponse {
+  Tariff tariff = 1;
+}
+
+message CalculatePriceResponse {
+  double total_price = 1;
+}
+
+message ActionResponse {
+  bool success = 1;
+  string message = 2;
+}

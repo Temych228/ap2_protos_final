@@ -7,78 +7,93 @@ option go_package = "github.com/Temych228/AP2_Final_OnlineParking/services/booki
 import "google/protobuf/timestamp.proto";
 
 service BookingService {
-  // Create a new booking
+  // 1
   rpc CreateBooking(CreateBookingRequest) returns (CreateBookingResponse);
 
-  // Get booking by id
+  // 2
   rpc GetBooking(GetBookingRequest) returns (GetBookingResponse);
 
-  // List bookings with filters
+  // 3
   rpc ListBookings(ListBookingsRequest) returns (ListBookingsResponse);
 
-  // Confirm booking
+  // 4
+  rpc UpdateBooking(UpdateBookingRequest) returns (UpdateBookingResponse);
+
+  // 5
+  rpc DeleteBooking(DeleteBookingRequest) returns (DeleteBookingResponse);
+
+  // 6
   rpc ConfirmBooking(ConfirmBookingRequest) returns (ConfirmBookingResponse);
 
-  // Cancel booking
+  // 7
   rpc CancelBooking(CancelBookingRequest) returns (CancelBookingResponse);
 
-  // Start booking (user arrived / parking started)
+  // 8
   rpc StartBooking(StartBookingRequest) returns (StartBookingResponse);
 
-  // Complete booking (finish parking session)
+  // 9
   rpc CompleteBooking(CompleteBookingRequest) returns (CompleteBookingResponse);
+
+  // 10
+  rpc ExtendBooking(ExtendBookingRequest) returns (ExtendBookingResponse);
+
+  // 11
+  rpc GetActiveBookingByUser(GetActiveBookingByUserRequest) returns (GetActiveBookingByUserResponse);
+
+  // 12
+  rpc CheckAvailability(CheckAvailabilityRequest) returns (CheckAvailabilityResponse);
 }
 
-/* ===================== CREATE ===================== */
+/* ================= CREATE ================= */
 
 message CreateBookingRequest {
-  string user_id        = 1;
-  int64  parking_id     = 2;
-  int64  spot_id        = 3;
-  string vehicle_plate   = 4;
+  string user_id = 1;
+  int64 parking_id = 2;
+  int64 spot_id = 3;
+  string vehicle_plate = 4;
   google.protobuf.Timestamp start_time = 5;
-  google.protobuf.Timestamp end_time   = 6;
+  google.protobuf.Timestamp end_time = 6;
 }
 
 message CreateBookingResponse {
   string booking_id = 1;
-  string status     = 2;
+  string status = 2;
 }
 
-/* ===================== GET ===================== */
+/* ================= GET ================= */
 
 message GetBookingRequest {
   string booking_id = 1;
 }
 
 message GetBookingResponse {
-  string booking_id   = 1;
-  string user_id      = 2;
-  int64  parking_id   = 3;
-  int64  spot_id      = 4;
+  string booking_id = 1;
+  string user_id = 2;
+  int64 parking_id = 3;
+  int64 spot_id = 4;
   string vehicle_plate = 5;
 
   google.protobuf.Timestamp start_time = 6;
-  google.protobuf.Timestamp end_time   = 7;
+  google.protobuf.Timestamp end_time = 7;
 
-  string status       = 8;
+  string status = 8;
   string cancel_reason = 9;
 
-  google.protobuf.Timestamp created_at  = 10;
-  google.protobuf.Timestamp updated_at  = 11;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
   google.protobuf.Timestamp cancelled_at = 12;
 }
 
-/* ===================== LIST ===================== */
+/* ================= LIST ================= */
 
 message ListBookingsRequest {
-  int32  page       = 1;
-  int32  page_size  = 2;
+  int32 page = 1;
+  int32 page_size = 2;
 
-  string user_id    = 3;
-  int64  parking_id = 4;
-  int64  spot_id    = 5;
-  string status     = 6;
+  string user_id = 3;
+  int64 parking_id = 4;
+  int64 spot_id = 5;
+  string status = 6;
 }
 
 message ListBookingsResponse {
@@ -88,16 +103,38 @@ message ListBookingsResponse {
 
 message BookingItem {
   string booking_id = 1;
-  string user_id    = 2;
-  int64  parking_id = 3;
-  int64  spot_id    = 4;
-  string status     = 5;
+  string user_id = 2;
+  int64 parking_id = 3;
+  int64 spot_id = 4;
+  string status = 5;
 
   google.protobuf.Timestamp start_time = 6;
-  google.protobuf.Timestamp end_time   = 7;
+  google.protobuf.Timestamp end_time = 7;
 }
 
-/* ===================== CONFIRM ===================== */
+/* ================= UPDATE ================= */
+
+message UpdateBookingRequest {
+  string booking_id = 1;
+  google.protobuf.Timestamp new_end_time = 2;
+}
+
+message UpdateBookingResponse {
+  string booking_id = 1;
+  string status = 2;
+}
+
+/* ================= DELETE ================= */
+
+message DeleteBookingRequest {
+  string booking_id = 1;
+}
+
+message DeleteBookingResponse {
+  bool success = 1;
+}
+
+/* ================= CONFIRM ================= */
 
 message ConfirmBookingRequest {
   string booking_id = 1;
@@ -105,22 +142,22 @@ message ConfirmBookingRequest {
 
 message ConfirmBookingResponse {
   string booking_id = 1;
-  string status     = 2;
+  string status = 2;
 }
 
-/* ===================== CANCEL ===================== */
+/* ================= CANCEL ================= */
 
 message CancelBookingRequest {
   string booking_id = 1;
-  string reason     = 2;
+  string reason = 2;
 }
 
 message CancelBookingResponse {
   string booking_id = 1;
-  string status     = 2;
+  string status = 2;
 }
 
-/* ===================== START ===================== */
+/* ================= START ================= */
 
 message StartBookingRequest {
   string booking_id = 1;
@@ -128,10 +165,10 @@ message StartBookingRequest {
 
 message StartBookingResponse {
   string booking_id = 1;
-  string status     = 2;
+  string status = 2;
 }
 
-/* ===================== COMPLETE ===================== */
+/* ================= COMPLETE ================= */
 
 message CompleteBookingRequest {
   string booking_id = 1;
@@ -139,5 +176,40 @@ message CompleteBookingRequest {
 
 message CompleteBookingResponse {
   string booking_id = 1;
-  string status     = 2;
+  string status = 2;
+}
+
+/* ================= EXTEND ================= */
+
+message ExtendBookingRequest {
+  string booking_id = 1;
+  google.protobuf.Timestamp new_end_time = 2;
+}
+
+message ExtendBookingResponse {
+  string booking_id = 1;
+  string status = 2;
+}
+
+/* ================= ACTIVE BY USER ================= */
+
+message GetActiveBookingByUserRequest {
+  string user_id = 1;
+}
+
+message GetActiveBookingByUserResponse {
+  repeated BookingItem items = 1;
+}
+
+/* ================= AVAILABILITY ================= */
+
+message CheckAvailabilityRequest {
+  int64 parking_id = 1;
+  int64 spot_id = 2;
+  google.protobuf.Timestamp start_time = 3;
+  google.protobuf.Timestamp end_time = 4;
+}
+
+message CheckAvailabilityResponse {
+  bool available = 1;
 }

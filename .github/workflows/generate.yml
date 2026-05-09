@@ -29,15 +29,16 @@ jobs:
           # 1. Клонируем целевой Go-репозиторий[cite: 7]
           git clone https://x-access-token:${GITHUB_TOKEN}@github.com/Temych228/ap2_protos_go_final.git target_repo
           
-          # 2. Обновляем файлы сервисов: auth, notification, user[cite: 4, 5, 6]
-          # Очищаем старое содержимое, кроме служебной папки .git
-          find target_repo -mindepth 1 -maxdepth 1 -not -name ".git" -exec rm -rf {} +
+          # 2. Обновляем файлы сервисов: auth, notification, user
+          # Очищаем старое содержимое, кроме .git, go.mod и go.sum
+          find target_repo -mindepth 1 -maxdepth 1 \
+            -not -name ".git" \
+            -not -name "go.mod" \
+            -not -name "go.sum" \
+            -exec rm -rf {} +
           
-          # Копируем свежесгенерированный код из папки gen (согласно buf.gen.yaml)[cite: 1]
+          # Копируем свежесгенерированный код
           cp -r gen/* target_repo/
-          
-          cd target_repo
-          git add .
           
           # 3. Проверка на наличие реальных изменений[cite: 7]
           if git diff --staged --quiet; then

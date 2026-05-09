@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+package payment.v1;
+
+option go_package = "github.com/Temych228/ap2_protos_go_final/payment/v1;paymentv1";
+
+import "google/protobuf/timestamp.proto";
+
+service PaymentService {
+  rpc CreatePayment(CreatePaymentRequest) returns (PaymentResponse);
+  rpc GetPayment(GetPaymentRequest) returns (PaymentResponse);
+  rpc GetPaymentByBooking(GetPaymentByBookingRequest) returns (PaymentResponse);
+  rpc ListPayments(ListPaymentsRequest) returns (PaymentListResponse);
+  rpc CancelPayment(CancelPaymentRequest) returns (PaymentResponse);
+  rpc Health(HealthRequest) returns (HealthResponse);
+}
+
+enum PaymentMethod {
+  PAYMENT_METHOD_UNSPECIFIED = 0;
+  PAYMENT_METHOD_CARD = 1;
+  PAYMENT_METHOD_CASH = 2;
+  PAYMENT_METHOD_KASPI = 3;
+}
+
+enum PaymentStatus {
+  PAYMENT_STATUS_UNSPECIFIED = 0;
+  PAYMENT_STATUS_PENDING = 1;
+  PAYMENT_STATUS_PAID = 2;
+  PAYMENT_STATUS_FAILED = 3;
+  PAYMENT_STATUS_CANCELLED = 4;
+}
+
+message Payment {
+  string id = 1;
+  string booking_id = 2;
+  string user_id = 3;
+
+  int64 parking_id = 4;
+  int64 spot_id = 5;
+
+  double amount = 6;
+
+  PaymentMethod method = 7;
+  PaymentStatus status = 8;
+
+  string provider_payment_id = 9;
+  string failure_reason = 10;
+
+  google.protobuf.Timestamp created_at = 11;
+  google.protobuf.Timestamp paid_at = 12;
+  google.protobuf.Timestamp updated_at = 13;
+}
+
+message CreatePaymentRequest {
+  string booking_id = 1;
+  PaymentMethod method = 2;
+}
+
+message GetPaymentRequest {
+  string id = 1;
+}
+
+message GetPaymentByBookingRequest {
+  string booking_id = 1;
+}
+
+message ListPaymentsRequest {
+  string user_id = 1;
+  PaymentStatus status = 2;
+}
+
+message PaymentResponse {
+  Payment payment = 1;
+}
+
+message PaymentListResponse {
+  repeated Payment payments = 1;
+}
+
+message CancelPaymentRequest {
+  string id = 1;
+}
+
+message HealthRequest {}
+
+message HealthResponse {
+  string service = 1;
+  string status = 2;
+}

@@ -13,6 +13,13 @@ service PaymentService {
   rpc ListPayments(ListPaymentsRequest) returns (PaymentListResponse);
   rpc CancelPayment(CancelPaymentRequest) returns (PaymentResponse);
   rpc Health(HealthRequest) returns (HealthResponse);
+
+  rpc MarkPaymentPaid(MarkPaymentPaidRequest) returns (PaymentResponse);
+  rpc MarkPaymentFailed(MarkPaymentFailedRequest) returns (PaymentResponse);
+  rpc CheckBookingPaid(CheckBookingPaidRequest) returns (CheckBookingPaidResponse);
+  rpc ListPaymentsByParking(ListPaymentsByParkingRequest) returns (PaymentListResponse);
+  rpc GetPaymentStats(GetPaymentStatsRequest) returns (PaymentStatsResponse);
+  rpc GetRevenueByParking(GetRevenueByParkingRequest) returns (RevenueByParkingResponse);
 }
 
 enum PaymentMethod {
@@ -79,6 +86,50 @@ message PaymentListResponse {
 
 message CancelPaymentRequest {
   string id = 1;
+}
+
+message MarkPaymentPaidRequest {
+  string id = 1;
+  string provider_payment_id = 2;
+}
+
+message MarkPaymentFailedRequest {
+  string id = 1;
+  string failure_reason = 2;
+}
+
+message CheckBookingPaidRequest {
+  string booking_id = 1;
+}
+
+message CheckBookingPaidResponse {
+  string booking_id = 1;
+  bool paid = 2;
+}
+
+message ListPaymentsByParkingRequest {
+  int64 parking_id = 1;
+}
+
+message GetPaymentStatsRequest {}
+
+message PaymentStatsResponse {
+  int64 total_payments = 1;
+  int64 pending_payments = 2;
+  int64 paid_payments = 3;
+  int64 failed_payments = 4;
+  int64 cancelled_payments = 5;
+  double total_revenue = 6;
+}
+
+message GetRevenueByParkingRequest {
+  int64 parking_id = 1;
+}
+
+message RevenueByParkingResponse {
+  int64 parking_id = 1;
+  int64 paid_payments = 2;
+  double total_revenue = 3;
 }
 
 message HealthRequest {}
